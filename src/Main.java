@@ -1,10 +1,11 @@
 import manage.*;
-import model.*;
+import server.Server;
 
 import java.util.*;
 
 public class Main {
     public static void main(String[] args){
+        Server.run();
 
         Command cm = new Command();
         Runtime.getRuntime().addShutdownHook(new Thread(()->cm.collectionSave()));

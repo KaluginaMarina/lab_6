@@ -9,12 +9,13 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 
 import static java.lang.Math.toIntExact;
 
 abstract class CollectionManage {
-    protected ArrayDeque<Personage> heroes = new ArrayDeque<>();
+    protected ConcurrentLinkedDeque<Personage> heroes = new ConcurrentLinkedDeque<>();
     protected Date createDate;
     protected Date changeDate;
 
@@ -23,7 +24,7 @@ abstract class CollectionManage {
     protected final String fileName = System.getenv("FILENAME");
     protected final String fileNameClosing = System.getenv("FILENAMECLOSE");
 
-    public ArrayDeque<Personage> getHeroes() {
+    public ConcurrentLinkedDeque<Personage> getHeroes() {
         return heroes;
     }
 
@@ -51,7 +52,7 @@ abstract class CollectionManage {
 
     /**
      * Метод, создающий коллекцию Personage по данным из файла fileName
-     * @return true - успех, false - инче
+     * @return true, false
      */
     public boolean collectionCreater(){
         String heroesJson = read(fileName);
@@ -123,12 +124,33 @@ abstract class CollectionManage {
     }
 
     /**
+     * Метод возвращает копию объекта ConcurrentLinkedDeque<Personage>
+     * (тут вроде нельзя пользоваться clone)
+     * @param c - копируемый объект
+     * @return ConcurrentLinkedDeque<Personage> clone
+     */
+   /* protected ConcurrentLinkedDeque<Personage> copy (ConcurrentLinkedDeque c){
+        ConcurrentLinkedDeque<Personage> res = new ConcurrentLinkedDeque<>();
+        ConcurrentLinkedDeque<Personage> tmp = new ConcurrentLinkedDeque<>();
+        while (!c.isEmpty()){
+            Personage pers = (Personage) c.pollFirst();
+            res.add(pers);
+            tmp.add(pers);
+        }
+        heroes = tmp;
+        return res;
+    }*/
+
+
+    /**
      * Метод, переаодящий строку в строку, формата scv
      * @return String - строка, формата scv
      */
     private String toSCV(){
+        //String res = "";
+        //ConcurrentLinkedDeque<Personage> p = copy(heroes);
         String res = "";
-        ArrayDeque<Personage> p = heroes.clone();
+        //heroes.stream().forEach();
         while (!heroes.isEmpty()){
             switch (heroes.getFirst().type){
                 case "Читатель" : {
@@ -147,7 +169,7 @@ abstract class CollectionManage {
             }
             heroes.removeFirst();
         }
-        heroes = p;
+        //heroes = p;
         return res;
     }
 

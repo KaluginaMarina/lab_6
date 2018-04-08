@@ -1,5 +1,8 @@
 package model;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public abstract class Personage {
     public String name = "NoName";
     public String type = "Персонаж";
@@ -9,6 +12,7 @@ public abstract class Personage {
     public int force;
     public int height;
     public Mood mood = Mood.NORMAL;
+    public Date dateCreate;
 
     @Override
     public boolean equals(Object s) {

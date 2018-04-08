@@ -6,20 +6,13 @@ import java.util.*;
 public class Main {
     public static void main(String[] args){
 
-        //TestThread th = new TestThread();
-        //Thread thread = new Thread(th);
-        //thread.start();
-
-        List<? extends Number> a = new ArrayList<Integer>();
-        List<? super Number>b = new ArrayList<>();
-        Collections.copy(b, a);
-
         Command cm = new Command();
         Runtime.getRuntime().addShutdownHook(new Thread(()->cm.collectionSave()));
         cm.collectionCreater();
 
         String man = cm.read("materials/man.txt");
         System.out.println("help / ?: открыть справку");
+
 
         while(true){
             System.out.println("Введите команду: ");

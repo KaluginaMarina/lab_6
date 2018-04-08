@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Date;
+
 public class Shorties extends Personage {
 
     public Shorties (String name, double x, double y, int height){
@@ -10,6 +12,7 @@ public class Shorties extends Personage {
         this.force = 5;
         this.height = height;
         this.skillSwear = 3;
+        this.dateCreate = new Date();
     }
 
     /**

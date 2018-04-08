@@ -31,7 +31,7 @@ public class Main {
                 if(cm.remove_greater(command.substring(14))){
                     System.out.println("Выполнено.");
                 };
-            } else if ((command.length() > 9 && command.substring(0, 10).equals("add_if_max")) || (command.length() > 9 && command.substring(0, 9).equals("add_if_min"))){
+            } else if ((command.length() > 9 && command.substring(0, 10).equals("add_if_max")) || (command.length() > 9 && command.substring(0, 10).equals("add_if_min"))){
                 if(cm.addIf(command.substring(0, 10), command.substring(10))){
                     System.out.println("Выполнено.");
                 }
@@ -41,9 +41,6 @@ public class Main {
                 };
             } else if (command.equals("print")) {
                 System.out.println(cm.getHeroes());
-            } else if (command.equals("sort")) {
-                cm.sort();
-                System.out.println("Выполнено.");
             } else if (command.equals("?") || command.equals("help")){
                 System.out.println(man);
             } else if (command.equals("exit")){

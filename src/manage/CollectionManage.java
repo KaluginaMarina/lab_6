@@ -10,19 +10,20 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
-
+import java.util.stream.Collectors;
 
 import static java.lang.Math.toIntExact;
 
+
 abstract class CollectionManage {
-    protected ConcurrentLinkedDeque<Personage> heroes = new ConcurrentLinkedDeque<>();
-    protected Date createDate;
-    protected Date changeDate;
+    ConcurrentLinkedDeque<Personage> heroes = new ConcurrentLinkedDeque<>();
+    Date createDate;
+    Date changeDate;
 
     //private final String fileName = "materials/Heroes.csv";
     //private final String fileNameClosing = "materials/HeroesClosing.csv";
-    protected final String fileName = System.getenv("FILENAME");
-    protected final String fileNameClosing = System.getenv("FILENAMECLOSE");
+    private final String fileName = System.getenv("FILENAME");
+    private final String fileNameClosing = System.getenv("FILENAMECLOSE");
 
     public ConcurrentLinkedDeque<Personage> getHeroes() {
         return heroes;
@@ -98,6 +99,7 @@ abstract class CollectionManage {
                     }
                 }
             }
+            heroes = heroes.stream().sorted().collect(Collectors.toCollection(ConcurrentLinkedDeque::new));
             changeDate = new Date();
             return true;
         } catch (Exception e){
@@ -129,7 +131,7 @@ abstract class CollectionManage {
      * @param c - копируемый объект
      * @return ConcurrentLinkedDeque<Personage> clone
      */
-   /* protected ConcurrentLinkedDeque<Personage> copy (ConcurrentLinkedDeque c){
+    private ConcurrentLinkedDeque<Personage> copy (ConcurrentLinkedDeque c){
         ConcurrentLinkedDeque<Personage> res = new ConcurrentLinkedDeque<>();
         ConcurrentLinkedDeque<Personage> tmp = new ConcurrentLinkedDeque<>();
         while (!c.isEmpty()){
@@ -139,58 +141,16 @@ abstract class CollectionManage {
         }
         heroes = tmp;
         return res;
-    }*/
-
+    }
 
     /**
      * Метод, переаодящий строку в строку, формата scv
      * @return String - строка, формата scv
      */
     private String toSCV(){
-        //String res = "";
-        //ConcurrentLinkedDeque<Personage> p = copy(heroes);
-        String res = "";
-        //heroes.stream().forEach();
-        while (!heroes.isEmpty()){
-            switch (heroes.getFirst().type){
-                case "Читатель" : {
-                    res += heroes.getFirst().type + "," + heroes.getFirst().name + "," + heroes.getFirst().height  + "," + heroes.getFirst().force + "," + heroes.getFirst().mood + "\n";
-                    break;
-                }
-                case "Коротышка": { }
-                case "Лунатик": {
-
-                    res += heroes.getFirst().type + "," + heroes.getFirst().name + "," + heroes.getFirst().x + "," + heroes.getFirst().y + "," + heroes.getFirst().height + "," + heroes.getFirst().skillSwear + "," + heroes.getFirst().force + "," + heroes.getFirst().mood + "\n";
-                    break;
-                }
-                default:{
-                    break;
-                }
-            }
-            heroes.removeFirst();
-        }
-        //heroes = p;
-        return res;
-    }
-
-    /**
-     * remove_last - удаляет последний элемент
-     */
-    public void removeLast(){
-        if (heroes.isEmpty()){
-            System.out.println("Коллекция пуста.");
-            return;
-        }
-        System.out.println("Элемент " + heroes.removeLast() + " удален.");
-        changeDate = new Date();
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public Date getChangeDate() {
-        return changeDate;
+        return heroes.stream()
+                     .map(x -> ((x.type.equals("Читатель")) ? x.type + "," + x.name + "," + x.height  + "," + x.force + "," + x.mood + "\n" : x.type + "," + x.name + "," + x.x + "," + x.y + "," + x.height + "," + x.skillSwear + "," + x.force + "," + x.mood + "\n"))
+                     .collect(Collectors.joining());
     }
 
     /**
@@ -198,7 +158,7 @@ abstract class CollectionManage {
      * Считывание происходит до тех пор, пока не встретится пустая строка
      * @return String - считанная строка
      */
-    protected String readPers(){
+    String readPers(){
         Scanner input = new Scanner(System.in);
         String res = "";
         String str = input.nextLine();
@@ -218,18 +178,16 @@ abstract class CollectionManage {
     }
 
     /**
-     * add {element} Метод для добавления элемента в коллекцию в интерактивном режиме
-     * Формат задания элемента {element}- json
-     * При вводе {element} другого формата или при вводе некорректного представления объекта - бросается исключение
-     * @param next - строка, которая подается пользователем после команды
-     * @return true - успешное выполнение команды, false - при возникновении ошибки
+     * Метод считывает героя в формате json и создает новый объект персонажа
+     * @param next строка, которая посылается пользователем непосредственно за командой (на той же строке)
+     * @return объект персонажа
      */
-    public boolean add(String next) {
+    Personage newPers(String next) {
         try {
             String heroesJson = readPers();
             heroesJson = next + heroesJson;
             if (heroesJson == null){
-                return false;
+                return null;
             };
             JSONParser parser = new JSONParser();
             JSONObject ob = (JSONObject) parser.parse(heroesJson);
@@ -241,9 +199,7 @@ abstract class CollectionManage {
                     if(!reader.setMood((String) ob.get("mood"))){
                         throw new Exception();
                     }
-                    heroes.add(reader);
-                    //heroes.add(new model.Reader((String) ob.get("name")));
-                    break;
+                    return reader;
                 }
                 case "Лунатик": {
                     Moonlighter moonlighter = new Moonlighter((String) ob.get("name"), (double) ob.get("x"), (double) ob.get("y"), toIntExact((long) ob.get("height")));
@@ -252,9 +208,7 @@ abstract class CollectionManage {
                     if(!moonlighter.setMood((String) ob.get("mood"))){
                         throw new Exception();
                     }
-                    heroes.add(moonlighter);
-                    //heroes.add(new model.Moonlighter((String) ob.get("name"), (double) ob.get("x"), (double) ob.get("y"), toIntExact((long) ob.get("height"))));
-                    break;
+                    return moonlighter;
                 }
                 case "Коротышка": {
                     Shorties shorties = new Shorties((String) ob.get("name"), (double) ob.get("x"), (double) ob.get("y"), toIntExact((long) ob.get("height")));
@@ -263,64 +217,17 @@ abstract class CollectionManage {
                     if(!shorties.setMood((String) ob.get("mood"))){
                         throw new Exception();
                     }
-                    heroes.add(shorties);
-                    //heroes.add(new model.Shorties((String) ob.get("name"), (double) ob.get("x"), (double) ob.get("y"), toIntExact((long) ob.get("height"))));
-                    break;
+                    return shorties;
                 }
                 default: {
                     throw new Exception();
                 }
-            };
+            }
         } catch (Exception e){
             System.out.println("Объект должен быть формата json или введено некорректное представление объекта.");
-            return false;
-        }
-        changeDate = new Date();
-        return true;
-    }
-
-    /**
-     *  load - перечитать коллекцию из файла
-     * @return true - успешное выполнение команды, false - при возникновении ошибки
-     */
-    public boolean load(){
-        while (!heroes.isEmpty()){
-            heroes.removeFirst();
-        }
-        return (collectionCreater());
-    }
-
-    /**
-     * переписывает ArrayDegue в List
-     * @return list - данная очередь в коллекцие list
-     */
-     protected List<Personage> toList(){
-        List<Personage> list = new ArrayList<>();
-        while (!heroes.isEmpty()){
-            list.add(heroes.removeFirst());
-        }
-        toArrayDedue(list);
-        return list;
-    }
-
-    /**
-     * пеерписывает List в ArrayDeque
-     * @param list - lfyysq List
-     */
-    protected void toArrayDedue(List<Personage> list){
-        while (!heroes.isEmpty()){
-            heroes.removeFirst();
-        }
-        for (int i = 0; i < list.size(); ++i){
-            heroes.add(list.get(i));
+            return null;
         }
     }
-
-
-    /**
-     * Метод, сортирующий коллекцию по возрастанию
-     */
-    abstract public void sort();
 
     /**
      * remove_greater {element}: удалить из коллекции все элементы, превышающие заданный
@@ -345,4 +252,25 @@ abstract class CollectionManage {
      * info: вывести в стандартный поток вывода информацию о коллекции (тип, дата инициализации, дата изменения, количество элементов)
      */
     abstract public void info();
+
+    /**
+     *  load - перечитать коллекцию из файла
+     * @return true - успешное выполнение команды, false - при возникновении ошибки
+     */
+    abstract public boolean load();
+
+    /**
+     * add {element} Метод для добавления элемента в коллекцию в интерактивном режиме
+     * Формат задания элемента {element}- json
+     * При вводе {element} другого формата или при вводе некорректного представления объекта - бросается исключение
+     * @param next - строка, которая подается пользователем после команды
+     * @return true - успешное выполнение команды, false - при возникновении ошибки
+     */
+    abstract public boolean add(String next);
+
+
+    /**
+     * remove_last - удаляет последний элемент
+     */
+    abstract public void removeLast();
 }

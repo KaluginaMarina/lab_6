@@ -1,9 +1,8 @@
 package model;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public abstract class Personage {
+public abstract class Personage implements Comparable<Personage>{
     public String name = "NoName";
     public String type = "Персонаж";
     public double x = 0;
@@ -75,7 +74,8 @@ public abstract class Personage {
      * @param p - персонаж с которым сравниваем
      * @return 0 - объекты равны, > 0 => (this > p), < 0 => (this < p)
      */
-    public int compare(Personage p){
+    @Override
+    public int compareTo (Personage p){
         if (this.toString().compareTo(p.toString()) == 0){
             return this.height - p.height;
         } else {

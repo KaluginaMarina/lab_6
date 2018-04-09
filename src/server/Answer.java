@@ -44,7 +44,7 @@ public class Answer extends Thread {
                 }
             } else if (command.length() > 2 && command.substring(0, 3).equals("add")) {
                 if (cm.add(command.substring(3, command.length()))) {
-                    System.out.println(cm.getHeroes().getLast() + " добавлен в коллекцию.");
+                    System.out.println("Персонаж добавлен в коллекцию.");
                 }
                 ;
             } else if (command.equals("print")) {
@@ -55,14 +55,16 @@ public class Answer extends Thread {
                 System.out.println("Команда не найдена.\nhelp / ?: открыть справку");
             }
         } catch (NoSuchElementException e) {
+
+            System.out.println("Где-то ошибка");
             return;
         };
 
         try {
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
             out.writeUTF(cm.toSCV());
+            //System.out.println(cm.heroes);
             out.flush();
-            out.close();
         } catch (SocketException e){
             System.out.println("**Конец передачи");
         } catch (EOFException e){

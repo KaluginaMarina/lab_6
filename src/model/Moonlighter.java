@@ -22,7 +22,6 @@ public class Moonlighter extends Personage {
         this.height = height;
         this.skillSwear = 10;
         this.dateCreate = new Date();
-        System.out.println(dateCreate);
 
     }
 

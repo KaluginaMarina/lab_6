@@ -31,8 +31,9 @@ public class Command extends CollectionManage{
     @Override
     public boolean add(String next) {
         try {
-            String heroesJson = readPers();
-            heroesJson = next + heroesJson;
+            /*String heroesJson = readPers();
+            heroesJson = next + heroesJson;*/
+            String heroesJson = next;
             if (heroesJson == null){
                 return false;
             };

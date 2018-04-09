@@ -15,7 +15,8 @@ public class Main {
         System.out.println("help / ?: открыть справку");
 
 
-        while(true){
+
+        /*while(true){
             System.out.println("Введите команду: ");
             try{Scanner input = new Scanner(System.in);
             String command = input.nextLine();
@@ -51,7 +52,7 @@ public class Main {
             } }
             catch (NoSuchElementException e){break;};
 
-        }
+        }*/
         //cm.collectionSave();
     }
 }

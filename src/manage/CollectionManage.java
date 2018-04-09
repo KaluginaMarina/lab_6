@@ -16,7 +16,7 @@ import static java.lang.Math.toIntExact;
 
 
 abstract class CollectionManage {
-    ConcurrentLinkedDeque<Personage> heroes = new ConcurrentLinkedDeque<>();
+    public ConcurrentLinkedDeque<Personage> heroes = new ConcurrentLinkedDeque<>();
     Date createDate;
     Date changeDate;
 
@@ -147,7 +147,7 @@ abstract class CollectionManage {
      * Метод, переаодящий строку в строку, формата scv
      * @return String - строка, формата scv
      */
-    private String toSCV(){
+    public String toSCV(){
         return heroes.stream()
                      .map(x -> ((x.type.equals("Читатель")) ? x.type + "," + x.name + "," + x.height  + "," + x.force + "," + x.mood + "\n" : x.type + "," + x.name + "," + x.x + "," + x.y + "," + x.height + "," + x.skillSwear + "," + x.force + "," + x.mood + "\n"))
                      .collect(Collectors.joining());

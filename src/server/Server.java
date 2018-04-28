@@ -1,14 +1,14 @@
 package server;
 
 import manage.Command;
+import model.Personage;
+import client.util.CommandType;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class Server {
     public static void run() {
@@ -18,26 +18,38 @@ public class Server {
             System.out.println("**Connection accepted.");
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
             DataInputStream in = new DataInputStream(client.getInputStream());
+            client.util.Command entry = null;
             while(!client.isClosed()){
-                System.out.println("**Server reading from channel...");
-                String entry = in.readUTF();
-                System.out.println(entry);
-                if(entry.equalsIgnoreCase("quit")){
-                    out.writeUTF("quit");
+                System.out.println("\n**Получено...");
+                ObjectInputStream ois = new ObjectInputStream(in);
+                Object ob = ois.readObject();
+                try {
+                    client.util.Command tmp = (client.util.Command) ob;
+                    entry = tmp;
+                    System.out.println(entry);
+                } catch (ClassCastException e) {
+                    System.out.println("Ошибка. Команда не команда");
+                }
+                if(entry != null && entry.commandType == CommandType.QUIT){
                     out.flush();
                     break;
                 }
                 Answer answer = new Answer(entry, cm, client);
-                answer.start();
+                answer.run();
             }
             in.close();
             out.close();
             client.close();
         } catch (SocketException e){
             System.out.println("**Конец передачи.");
+            System.out.println("socket exception");
+            e.printStackTrace();
         } catch (EOFException e){
             System.out.println("**Конец передачи.");
+            e.printStackTrace();
         } catch (IOException e){
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }

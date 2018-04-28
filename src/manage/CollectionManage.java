@@ -149,8 +149,8 @@ abstract class CollectionManage {
      */
     public String toSCV(){
         return heroes.stream()
-                     .map(x -> ((x.type.equals("Читатель")) ? x.type + "," + x.name + "," + x.height  + "," + x.force + "," + x.mood + "\n" : x.type + "," + x.name + "," + x.x + "," + x.y + "," + x.height + "," + x.skillSwear + "," + x.force + "," + x.mood + "\n"))
-                     .collect(Collectors.joining());
+                .map(x -> ((x.type.equals("Читатель")) ? x.type + "," + x.name + "," + x.height  + "," + x.force + "," + x.mood + "\n" : x.type + "," + x.name + "," + x.x + "," + x.y + "," + x.height + "," + x.skillSwear + "," + x.force + "," + x.mood + "\n"))
+                .collect(Collectors.joining());
     }
 
     /**
@@ -165,15 +165,15 @@ abstract class CollectionManage {
         if(str.equals("\\s+")){
             str = input.nextLine();
         }
-       try{
-           while (!(str).equals("")){
-               res += str;
-               str = input.nextLine();
-           }
-       } catch (Exception e){
-           e.printStackTrace();
-           return res;
-       };
+        try{
+            while (!(str).equals("")){
+                res += str;
+                str = input.nextLine();
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            return res;
+        };
         return res;
     }
 
@@ -233,10 +233,9 @@ abstract class CollectionManage {
      * remove_greater {element}: удалить из коллекции все элементы, превышающие заданный
      * Формат задания элемента {element}- json
      * При вводе {element} другого формата или при вводе некорректного представления объекта - бросается исключение
-     * @param next -строка, которая подается пользователем после команды
      * @return true - успешное выполнение команды, false - при возникновении ошибки
      */
-    abstract public boolean remove_greater(String next);
+    abstract public boolean remove_greater(Personage pers);
 
     /**
      * add_if_max {element}: добавить новый элемент в коллекцию, если его значение превышает значение наибольшего элемента этой коллекции
@@ -246,12 +245,12 @@ abstract class CollectionManage {
      * @param command "add_if_max" или "add_if_min"
      * @return true - успешное выполнение команды, false - при возникновении ошибки
      */
-    abstract public boolean addIf(String command, String next);
+    abstract public boolean addIf(String command, Personage pers);
 
     /**
      * info: вывести в стандартный поток вывода информацию о коллекции (тип, дата инициализации, дата изменения, количество элементов)
      */
-    abstract public void info();
+    abstract public String info();
 
     /**
      *  load - перечитать коллекцию из файла
@@ -263,10 +262,9 @@ abstract class CollectionManage {
      * add {element} Метод для добавления элемента в коллекцию в интерактивном режиме
      * Формат задания элемента {element}- json
      * При вводе {element} другого формата или при вводе некорректного представления объекта - бросается исключение
-     * @param next - строка, которая подается пользователем после команды
      * @return true - успешное выполнение команды, false - при возникновении ошибки
      */
-    abstract public boolean add(String next);
+    abstract public boolean add(Personage pers);
 
 
     /**

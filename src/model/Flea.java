@@ -9,7 +9,7 @@ public class Flea implements Insects {
     double z = 0;
     int skillSwear = 0;
 
-    public Flea(double x, double y, double z) {
+    Flea(double x, double y, double z) {
         String name = "Клоп";
         String type = "Насекомое";
         int force = 9;

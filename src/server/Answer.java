@@ -1,21 +1,20 @@
 package server;
 
 import manage.*;
+import client.util.CommandType;
 
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.NoSuchElementException;
-import java.util.Scanner;
+
 
 public class Answer extends Thread {
-    private Command cm = new Command();
-    private String command;
+    private Command cm;
+    private client.util.Command command;
     private Socket client;
 
-    public Answer(String command, Command cm, Socket client) {
+    public Answer(client.util.Command command, Command cm, Socket client) {
         this.cm = cm;
         this.command = command;
         this.client = client;
@@ -24,52 +23,50 @@ public class Answer extends Thread {
     @Override
     public void run() {
         try {
-            command = command.replaceAll("\\s+", "");
-            if (command.equals("remove_last")) {
+            DataOutputStream out = new DataOutputStream(client.getOutputStream());
+            ObjectOutputStream oos = new ObjectOutputStream(out);
+
+            if (command.commandType == CommandType.REMOVE_LAST) {
                 cm.removeLast();
-            } else if (command.equals("load")) {
-                if (cm.load()) {
-                    System.out.println("Выполнено.");
-                }
-            } else if (command.equals("info")) {
-                cm.info();
-            } else if (command.length() > 13 && command.substring(0, 14).equals("remove_greater")) {
-                if (cm.remove_greater(command.substring(14))) {
-                    System.out.println("Выполнено.");
-                }
-                ;
-            } else if ((command.length() > 9 && command.substring(0, 10).equals("add_if_max")) || (command.length() > 9 && command.substring(0, 10).equals("add_if_min"))) {
-                if (cm.addIf(command.substring(0, 10), command.substring(10))) {
-                    System.out.println("Выполнено.");
-                }
-            } else if (command.length() > 2 && command.substring(0, 3).equals("add")) {
-                if (cm.add(command.substring(3, command.length()))) {
-                    System.out.println("Персонаж добавлен в коллекцию.");
-                }
-                ;
-            } else if (command.equals("print")) {
-                System.out.println(cm.getHeroes());
-            } else if (command.equals("exit")) {
+                oos.writeObject(cm.heroes);
+            } else if (command.commandType ==  CommandType.LOAD) {
+                cm.load();
+                oos.writeObject(cm.heroes);
+            } else if (command.commandType == CommandType.INFO) {
+                oos.writeObject(cm.info());
+            } else if (command.commandType == CommandType.REMOVE_GREATER) {
+                cm.remove_greater(command.personage);
+                oos.writeObject(cm.heroes);
+            } else if (command.commandType == CommandType.ADD_IF_MAX) {
+                cm.addIf("add_if_max", command.personage);
+                oos.writeObject(cm.heroes);
+            } else if (command.commandType == CommandType.ADD_IF_MIN) {
+                cm.addIf("add_if_min", command.personage);
+                oos.writeObject(cm.heroes);
+            } else if (command.commandType == CommandType.ADD) {
+                cm.add(command.personage);
+                oos.writeObject(cm.heroes);
+            } else if (command.commandType == CommandType.PRINT) {
+                oos.writeObject(cm.heroes);
+            } else if (command.commandType == CommandType.QUIT){
+                oos.writeObject(cm.heroes);
+                oos.flush();
+                out.flush();
                 return;
-            } else {
+            } else if (command.commandType == CommandType.HELP){
+                oos.flush();
+                out.flush();
+            }
+            else {
+                oos.writeObject(cm.heroes);
                 System.out.println("Команда не найдена.\nhelp / ?: открыть справку");
             }
+            oos.flush();
+            out.flush();
         } catch (NoSuchElementException e) {
-
             System.out.println("Где-то ошибка");
             return;
-        };
-
-        try {
-            DataOutputStream out = new DataOutputStream(client.getOutputStream());
-            out.writeUTF(cm.toSCV());
-            //System.out.println(cm.heroes);
-            out.flush();
-        } catch (SocketException e){
-            System.out.println("**Конец передачи");
-        } catch (EOFException e){
-            System.out.println("**Конец передачи.");
-        }  catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

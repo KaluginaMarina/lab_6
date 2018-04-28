@@ -5,7 +5,7 @@ import java.util.Date;
 
 import static model.Mood.*;
 
-public class Moonlighter extends Personage {
+public class Moonlighter extends Personage{
 
     class unchException extends RuntimeException{
         unchException(String msg){

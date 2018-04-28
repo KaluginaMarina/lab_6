@@ -25,60 +25,11 @@ public class Command extends CollectionManage{
      * add {element} Метод для добавления элемента в коллекцию в интерактивном режиме
      * Формат задания элемента {element}- json
      * При вводе {element} другого формата или при вводе некорректного представления объекта - бросается исключение
-     * @param next - строка, которая подается пользователем после команды
      * @return true - успешное выполнение команды, false - при возникновении ошибки
      */
     @Override
-    public boolean add(String next) {
-        try {
-            /*String heroesJson = readPers();
-            heroesJson = next + heroesJson;*/
-            String heroesJson = next;
-            if (heroesJson == null){
-                return false;
-            };
-            JSONParser parser = new JSONParser();
-            JSONObject ob = (JSONObject) parser.parse(heroesJson);
-            switch ((String)ob.get("type")) {
-                case "Читатель": {
-                    Reader reader = new Reader((String) ob.get("name"));
-                    reader.height = toIntExact((long) ob.get("height"));
-                    reader.force = toIntExact((long) ob.get("force"));
-                    if(!reader.setMood((String) ob.get("mood"))){
-                        throw new Exception();
-                    }
-                    heroes = Stream.concat(heroes.stream(), Stream.of(reader)).sorted().collect(Collectors.toCollection(ConcurrentLinkedDeque::new));
-                    break;
-                }
-                case "Лунатик": {
-                    Moonlighter moonlighter = new Moonlighter((String) ob.get("name"), (double) ob.get("x"), (double) ob.get("y"), toIntExact((long) ob.get("height")));
-                    moonlighter.skillSwear =  toIntExact((long) ob.get("skillSwear"));
-                    moonlighter.force =  toIntExact((long) ob.get("force"));
-                    if(!moonlighter.setMood((String) ob.get("mood"))){
-                        throw new Exception();
-                    }
-                    heroes = Stream.concat(heroes.stream(), Stream.of(moonlighter)).sorted().collect(Collectors.toCollection(ConcurrentLinkedDeque::new));
-                    break;
-                }
-                case "Коротышка": {
-                    Shorties shorties = new Shorties((String) ob.get("name"), (double) ob.get("x"), (double) ob.get("y"), toIntExact((long) ob.get("height")));
-                    shorties.skillSwear =  toIntExact((long) ob.get("skillSwear"));
-                    shorties.force =  toIntExact((long) ob.get("force"));
-                    if(!shorties.setMood((String) ob.get("mood"))){
-                        throw new Exception();
-                    }
-                    heroes = Stream.concat(heroes.stream(), Stream.of(shorties)).sorted().collect(Collectors.toCollection(ConcurrentLinkedDeque::new));
-                    break;
-                }
-                default: {
-                    throw new Exception();
-                }
-            };
-        } catch (Exception e){
-            System.out.println("Объект должен быть формата json или введено некорректное представление объекта.");
-            return false;
-        }
-        heroes = heroes.stream().sorted().collect(Collectors.toCollection(ConcurrentLinkedDeque::new));
+    public boolean add(Personage pers) {
+        heroes.add(pers);
         changeDate = new Date();
         return true;
     }
@@ -98,12 +49,10 @@ public class Command extends CollectionManage{
      * remove_greater {element}: удалить из коллекции все элементы, превышающие заданный
      * Формат задания элемента {element}- json
      * При вводе {element} другого формата или при вводе некорректного представления объекта - бросается исключение
-     * @param next -строка, которая подается пользователем после команды
      * @return true - успешное выполнение команды, false - при возникновении ошибки
      */
     @Override
-    public boolean remove_greater(String next){
-        Personage pers = newPers(next);
+    public boolean remove_greater(Personage pers){
         if (pers == null) {
             return false;
         };
@@ -121,15 +70,13 @@ public class Command extends CollectionManage{
      * @return true - успешное выполнение команды, false - при возникновении ошибки
      */
     @Override
-    public boolean addIf(String command, String next){
+    public boolean addIf(String command, Personage pers){
         if (heroes.isEmpty()){
-            Personage pers = newPers(next);
             heroes = Stream.concat(heroes.stream(), Stream.of(pers)).sorted().collect(Collectors.toCollection(ConcurrentLinkedDeque::new));
             System.out.println("Элемент " + pers.toString() + " добавлен");
             changeDate = new Date();
             return true;
         }
-        Personage pers = newPers(next);
         if (pers == null){
             return false;
         }
@@ -147,11 +94,8 @@ public class Command extends CollectionManage{
      * info: вывести в стандартный поток вывода информацию о коллекции (тип, дата инициализации, дата изменения, количество элементов)
      */
     @Override
-    public void info(){
-        System.out.println("Тип коллекции: " + heroes.getClass());
-        System.out.println("Количество элементов в коллекци: " + heroes.size());
-        System.out.println("Дата создания: " + createDate);
-        System.out.println("Дата изменения: " + changeDate);
+    public String info(){
+        return "Тип коллекции: " + heroes.getClass() + "\n" + "Количество элементов в коллекци: " + heroes.size() + "\n" + "Дата создания: " + createDate + "\n" + "Дата изменения: " + changeDate + "\n";
     }
 
 

@@ -6,11 +6,11 @@ public class Tree extends Forest {
     double y = 0;
     Forest forest = null;
 
-    public Tree(String name){
+    Tree(String name){
         this.name = name;
     }
 
-    public Tree(String name, double x, double y, Forest f){
+    Tree(String name, double x, double y, Forest f){
         this.name = name;
         this.x = x;
         this.y = y;

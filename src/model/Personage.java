@@ -1,8 +1,9 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public abstract class Personage implements Comparable<Personage>{
+public abstract class Personage implements Comparable<Personage>, Serializable{
     public String name = "NoName";
     public String type = "Персонаж";
     public double x = 0;

@@ -1,11 +1,41 @@
 import manage.Command;
 import server.Server;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class Main {
+
+    static ExecutorService executeIt = Executors.newFixedThreadPool(2);
+
     public static void main(String[] args){
         Command cm = new Command();
         Runtime.getRuntime().addShutdownHook(new Thread(()->cm.collectionSave()));
-        Server.run();
+        try (ServerSocket server = new ServerSocket(8080);
+             BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
+            ) {
+            while (!server.isClosed()) {
+                if (br.ready()) {
+                    String serverCommand = br.readLine();
+                    if (serverCommand.equalsIgnoreCase("quit")) {
+                        server.close();
+                        break;
+                    }
+                }
+                Socket client = server.accept();
+                executeIt.execute(new Server(client));
+                System.out.print("Connection accepted.");
+            }
+            executeIt.shutdown();
+
+        } catch (Exception e){
+            System.out.println("exp e");
+        }
+        //Server.run();
 
         /*Command cm = new Command();
         Runtime.getRuntime().addShutdownHook(new Thread(()->cm.collectionSave()));

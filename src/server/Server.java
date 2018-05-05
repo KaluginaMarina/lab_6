@@ -10,11 +10,18 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-public class Server {
-    public static void run() {
+public class Server implements Runnable{
+    private Socket client;
+
+    public Server (Socket client){
+        this.client = client;
+    }
+
+    @Override
+    public void run() {
         Command cm = new Command();
-        try (ServerSocket serverSocket = new ServerSocket(8080)) {
-            Socket client = serverSocket.accept();
+        try /*(ServerSocket serverSocket = new ServerSocket(8080))*/ {
+            //Socket client = serverSocket.accept();
             System.out.println("**Connection accepted.");
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
             DataInputStream in = new DataInputStream(client.getInputStream());

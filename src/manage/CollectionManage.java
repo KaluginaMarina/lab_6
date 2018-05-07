@@ -16,14 +16,15 @@ import static java.lang.Math.toIntExact;
 
 
 abstract class CollectionManage {
-    public ConcurrentLinkedDeque<Personage> heroes = new ConcurrentLinkedDeque<>();
-    Date createDate;
-    Date changeDate;
+    public static ConcurrentLinkedDeque<Personage> heroes = new ConcurrentLinkedDeque<>();
+    static Date createDate;
+    static Date changeDate;
 
     //private final String fileName = "materials/Heroes.csv";
     //private final String fileNameClosing = "materials/HeroesClosing.csv";
-    private final String fileName = System.getenv("FILENAME");
-    private final String fileNameClosing = System.getenv("FILENAMECLOSE");
+    private static final String fileName = System.getenv("FILENAME");
+    //private static final String fileNameClosing = System.getenv("FILENAMECLOSE");
+    private static final String fileNameClosing = System.getenv("FILENAME");
 
     public ConcurrentLinkedDeque<Personage> getHeroes() {
         return heroes;
@@ -33,7 +34,7 @@ abstract class CollectionManage {
      * Метод для чтения текста из файла fileName
      * @return String heroesJson - строка-содержимое файла
      */
-    public String read(String fileName){
+    public static String read(String fileName){
         String heroesJson = "";
         try (FileInputStream fis = new FileInputStream(fileName);
              InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
@@ -55,7 +56,7 @@ abstract class CollectionManage {
      * Метод, создающий коллекцию Personage по данным из файла fileName
      * @return true, false
      */
-    public boolean collectionCreater(){
+    public static boolean collectionCreater(){
         String heroesJson = read(fileName);
         Scanner sc = new Scanner(heroesJson);
         sc.useDelimiter("[,\n]");
@@ -101,6 +102,7 @@ abstract class CollectionManage {
             }
             heroes = heroes.stream().sorted().collect(Collectors.toCollection(ConcurrentLinkedDeque::new));
             changeDate = new Date();
+            createDate = new Date();
             return true;
         } catch (Exception e){
             System.out.println("Неправильное представление объекта.");
@@ -111,7 +113,7 @@ abstract class CollectionManage {
     /**
      * Метод, записывающий текущее состояние коллекции в файл fileNameClose
      */
-    public void collectionSave(){
+    public static void collectionSave(){
         if (!Files.isWritable(Paths.get(fileNameClosing))){
             System.out.println("Что-то с правами");
             return;
@@ -131,7 +133,7 @@ abstract class CollectionManage {
      * @param c - копируемый объект
      * @return ConcurrentLinkedDeque<Personage> clone
      */
-    private ConcurrentLinkedDeque<Personage> copy (ConcurrentLinkedDeque c){
+    private static ConcurrentLinkedDeque<Personage> copy (ConcurrentLinkedDeque c){
         ConcurrentLinkedDeque<Personage> res = new ConcurrentLinkedDeque<>();
         ConcurrentLinkedDeque<Personage> tmp = new ConcurrentLinkedDeque<>();
         while (!c.isEmpty()){
@@ -147,7 +149,7 @@ abstract class CollectionManage {
      * Метод, переаодящий строку в строку, формата scv
      * @return String - строка, формата scv
      */
-    public String toSCV(){
+    public static String toSCV(){
         return heroes.stream()
                 .map(x -> ((x.type.equals("Читатель")) ? x.type + "," + x.name + "," + x.height  + "," + x.force + "," + x.mood + "\n" : x.type + "," + x.name + "," + x.x + "," + x.y + "," + x.height + "," + x.skillSwear + "," + x.force + "," + x.mood + "\n"))
                 .collect(Collectors.joining());
@@ -158,7 +160,7 @@ abstract class CollectionManage {
      * Считывание происходит до тех пор, пока не встретится пустая строка
      * @return String - считанная строка
      */
-    String readPers(){
+    static String readPers(){
         Scanner input = new Scanner(System.in);
         String res = "";
         String str = input.nextLine();
@@ -182,7 +184,7 @@ abstract class CollectionManage {
      * @param next строка, которая посылается пользователем непосредственно за командой (на той же строке)
      * @return объект персонажа
      */
-    Personage newPers(String next) {
+    static Personage newPers(String next) {
         try {
             String heroesJson = readPers();
             heroesJson = next + heroesJson;
@@ -228,47 +230,4 @@ abstract class CollectionManage {
             return null;
         }
     }
-
-    /**
-     * remove_greater {element}: удалить из коллекции все элементы, превышающие заданный
-     * Формат задания элемента {element}- json
-     * При вводе {element} другого формата или при вводе некорректного представления объекта - бросается исключение
-     * @return true - успешное выполнение команды, false - при возникновении ошибки
-     */
-    abstract public boolean remove_greater(Personage pers);
-
-    /**
-     * add_if_max {element}: добавить новый элемент в коллекцию, если его значение превышает значение наибольшего элемента этой коллекции
-     * add_if_min {element}: добавить новый элемент в коллекцию, если его значение меньше, чем у наименьшего элемента этой коллекции
-     * Формат задания элемента {element}- json
-     * При вводе {element} другого формата или при вводе некорректного представления объекта - бросается исключение
-     * @param command "add_if_max" или "add_if_min"
-     * @return true - успешное выполнение команды, false - при возникновении ошибки
-     */
-    abstract public boolean addIf(String command, Personage pers);
-
-    /**
-     * info: вывести в стандартный поток вывода информацию о коллекции (тип, дата инициализации, дата изменения, количество элементов)
-     */
-    abstract public String info();
-
-    /**
-     *  load - перечитать коллекцию из файла
-     * @return true - успешное выполнение команды, false - при возникновении ошибки
-     */
-    abstract public boolean load();
-
-    /**
-     * add {element} Метод для добавления элемента в коллекцию в интерактивном режиме
-     * Формат задания элемента {element}- json
-     * При вводе {element} другого формата или при вводе некорректного представления объекта - бросается исключение
-     * @return true - успешное выполнение команды, false - при возникновении ошибки
-     */
-    abstract public boolean add(Personage pers);
-
-
-    /**
-     * remove_last - удаляет последний элемент
-     */
-    abstract public void removeLast();
 }

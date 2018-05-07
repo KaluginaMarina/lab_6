@@ -27,9 +27,9 @@ public class Command extends CollectionManage{
      * При вводе {element} другого формата или при вводе некорректного представления объекта - бросается исключение
      * @return true - успешное выполнение команды, false - при возникновении ошибки
      */
-    @Override
-    public boolean add(Personage pers) {
-        heroes.add(pers);
+     public static boolean add(Personage pers) {
+        //heroes.add(pers);
+        heroes = Stream.concat(heroes.stream(), Stream.of(pers)).sorted().collect(Collectors.toCollection(ConcurrentLinkedDeque::new));
         changeDate = new Date();
         return true;
     }
@@ -39,8 +39,7 @@ public class Command extends CollectionManage{
      *  load - перечитать коллекцию из файла
      * @return true - успешное выполнение команды, false - при возникновении ошибки
      */
-    @Override
-    public boolean load(){
+    public static boolean load(){
         heroes = new ConcurrentLinkedDeque<>();
         return (collectionCreater());
     }
@@ -51,8 +50,7 @@ public class Command extends CollectionManage{
      * При вводе {element} другого формата или при вводе некорректного представления объекта - бросается исключение
      * @return true - успешное выполнение команды, false - при возникновении ошибки
      */
-    @Override
-    public boolean remove_greater(Personage pers){
+    public static boolean remove_greater(Personage pers){
         if (pers == null) {
             return false;
         };
@@ -69,8 +67,7 @@ public class Command extends CollectionManage{
      * @param command "add_if_max" или "add_if_min"
      * @return true - успешное выполнение команды, false - при возникновении ошибки
      */
-    @Override
-    public boolean addIf(String command, Personage pers){
+    public static boolean addIf(String command, Personage pers){
         if (heroes.isEmpty()){
             heroes = Stream.concat(heroes.stream(), Stream.of(pers)).sorted().collect(Collectors.toCollection(ConcurrentLinkedDeque::new));
             System.out.println("Элемент " + pers.toString() + " добавлен");
@@ -93,8 +90,7 @@ public class Command extends CollectionManage{
     /**
      * info: вывести в стандартный поток вывода информацию о коллекции (тип, дата инициализации, дата изменения, количество элементов)
      */
-    @Override
-    public String info(){
+    public static String info(){
         return "Тип коллекции: " + heroes.getClass() + "\n" + "Количество элементов в коллекци: " + heroes.size() + "\n" + "Дата создания: " + createDate + "\n" + "Дата изменения: " + changeDate + "\n";
     }
 
@@ -102,8 +98,7 @@ public class Command extends CollectionManage{
     /**
      * remove_last - удаляет последний элемент
      */
-    @Override
-    public void removeLast(){
+    public static void removeLast(){
         if (heroes.isEmpty()){
             System.out.println("Коллекция пуста.");
             return;

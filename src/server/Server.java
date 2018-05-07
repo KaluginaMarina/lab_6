@@ -27,12 +27,12 @@ public class Server implements Runnable{
             DataInputStream in = new DataInputStream(client.getInputStream());
             client.util.Command entry = null;
             while(!client.isClosed()){
-                System.out.println("\n**Получено...");
                 ObjectInputStream ois = new ObjectInputStream(in);
                 Object ob = ois.readObject();
                 try {
                     client.util.Command tmp = (client.util.Command) ob;
                     entry = tmp;
+                    System.out.println("\n**Получено...");
                     System.out.println(entry);
                 } catch (ClassCastException e) {
                     System.out.println("Ошибка. Команда не команда");
@@ -41,7 +41,7 @@ public class Server implements Runnable{
                     out.flush();
                     break;
                 }
-                Answer answer = new Answer(entry, cm, client);
+                Answer answer = new Answer(entry, client);
                 answer.run();
             }
             in.close();

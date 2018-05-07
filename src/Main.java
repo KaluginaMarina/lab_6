@@ -1,4 +1,5 @@
 import manage.Command;
+import server.manage.Manage;
 import server.Server;
 
 import java.io.BufferedReader;
@@ -13,19 +14,18 @@ public class Main {
     static ExecutorService executeIt = Executors.newFixedThreadPool(2);
 
     public static void main(String[] args){
-        Command cm = new Command();
-        Runtime.getRuntime().addShutdownHook(new Thread(()->cm.collectionSave()));
-        try (ServerSocket server = new ServerSocket(8080);
-             BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
-            ) {
+
+        Manage manage = new Manage();
+        Thread manager = new Thread(manage);
+        manager.start();
+
+        Command.collectionCreater();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(()->Command.collectionSave()));
+
+        System.out.println("Сервер начал работу.");
+        try (ServerSocket server = new ServerSocket(8080); ) {
             while (!server.isClosed()) {
-                if (br.ready()) {
-                    String serverCommand = br.readLine();
-                    if (serverCommand.equalsIgnoreCase("quit")) {
-                        server.close();
-                        break;
-                    }
-                }
                 Socket client = server.accept();
                 executeIt.execute(new Server(client));
                 System.out.print("Connection accepted.");
@@ -40,7 +40,6 @@ public class Main {
         /*Command cm = new Command();
         Runtime.getRuntime().addShutdownHook(new Thread(()->cm.collectionSave()));
         cm.collectionCreater();
-
         String man = cm.read("materials/man.txt");
         System.out.println("help / ?: открыть справку");*/
 
@@ -81,7 +80,6 @@ public class Main {
                 System.out.println("Команда не найдена.\nhelp / ?: открыть справку");
             } }
             catch (NoSuchElementException e){break;};
-
         }*/
         //cm.collectionSave();
     }

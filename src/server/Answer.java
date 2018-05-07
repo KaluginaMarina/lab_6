@@ -10,12 +10,10 @@ import java.util.NoSuchElementException;
 
 
 public class Answer extends Thread {
-    private Command cm;
     private client.util.Command command;
     private Socket client;
 
-    public Answer(client.util.Command command, Command cm, Socket client) {
-        this.cm = cm;
+    public Answer(client.util.Command command, Socket client) {
         this.command = command;
         this.client = client;
     }
@@ -27,29 +25,29 @@ public class Answer extends Thread {
             ObjectOutputStream oos = new ObjectOutputStream(out);
 
             if (command.commandType == CommandType.REMOVE_LAST) {
-                cm.removeLast();
-                oos.writeObject(cm.heroes);
+                Command.removeLast();
+                oos.writeObject(Command.heroes);
             } else if (command.commandType ==  CommandType.LOAD) {
-                cm.load();
-                oos.writeObject(cm.heroes);
+                Command.load();
+                oos.writeObject(Command.heroes);
             } else if (command.commandType == CommandType.INFO) {
-                oos.writeObject(cm.info());
+                oos.writeObject(Command.info());
             } else if (command.commandType == CommandType.REMOVE_GREATER) {
-                cm.remove_greater(command.personage);
-                oos.writeObject(cm.heroes);
+                Command.remove_greater(command.personage);
+                oos.writeObject(Command.heroes);
             } else if (command.commandType == CommandType.ADD_IF_MAX) {
-                cm.addIf("add_if_max", command.personage);
-                oos.writeObject(cm.heroes);
+                Command.addIf("add_if_max", command.personage);
+                oos.writeObject(Command.heroes);
             } else if (command.commandType == CommandType.ADD_IF_MIN) {
-                cm.addIf("add_if_min", command.personage);
-                oos.writeObject(cm.heroes);
+                Command.addIf("add_if_min", command.personage);
+                oos.writeObject(Command.heroes);
             } else if (command.commandType == CommandType.ADD) {
-                cm.add(command.personage);
-                oos.writeObject(cm.heroes);
+                Command.add(command.personage);
+                oos.writeObject(Command.heroes);
             } else if (command.commandType == CommandType.PRINT) {
-                oos.writeObject(cm.heroes);
+                oos.writeObject(Command.heroes);
             } else if (command.commandType == CommandType.QUIT){
-                oos.writeObject(cm.heroes);
+                oos.writeObject(Command.heroes);
                 oos.flush();
                 out.flush();
                 return;
@@ -58,7 +56,7 @@ public class Answer extends Thread {
                 out.flush();
             }
             else {
-                oos.writeObject(cm.heroes);
+                oos.writeObject(Command.heroes);
                 System.out.println("Команда не найдена.\nhelp / ?: открыть справку");
             }
             oos.flush();

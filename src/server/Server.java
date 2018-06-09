@@ -49,11 +49,8 @@ public class Server implements Runnable{
             client.close();
         } catch (SocketException e){
             System.out.println("**Конец передачи.");
-            System.out.println("socket exception");
-            e.printStackTrace();
         } catch (EOFException e){
             System.out.println("**Конец передачи.");
-            e.printStackTrace();
         } catch (IOException e){
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
